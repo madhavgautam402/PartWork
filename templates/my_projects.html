@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Projects - PartWork</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #222; }
+
+        /* NAVBAR */
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; border-bottom: 1px solid #333; padding: 0 40px; }
+        .nav-bar-left-content, .nav-right-content { display: flex; align-items: center; }
+        .nav-links-left, .nav-links-right, .location-dropbox { display: flex; flex-direction: row; list-style: none; gap: 30px; align-items: center; }
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; transition: color 0.2s; }
+        .nav-link a:hover, .nav-link a.active { color: #fff; } 
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+        .location-dropbox { margin-right: 30px; gap: 10px; color: #9f9d9b; }
+
+        /* MAIN LAYOUT */
+        .main-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h2 { font-size: 32px; font-weight: 700; color: #222; }
+
+        /* PROJECT CARDS */
+        .app-list { display: flex; flex-direction: column; gap: 20px; }
+        .app-card { background: #fff; padding: 25px 30px; border-radius: 12px; border: 1px solid #dcdcdc; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
+        .app-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        
+        .app-info h4 { font-size: 22px; font-weight: 700; margin-bottom: 5px; color: #222; }
+        .app-meta { font-size: 15px; color: #666; font-weight: 500; }
+        .app-date { font-size: 14px; color: #888; margin-top: 10px; }
+
+        /* STATUS BADGES */
+        .status-badge { padding: 8px 16px; border-radius: 50px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-assigned { background-color: #eafaf1; color: #27ae60; border: 1px solid #a9dfbf; }
+        .status-funded { background-color: #ebf5fb; color: #2980b9; border: 1px solid #a9cce3; }
+        .status-completed { background-color: #f2f3f4; color: #7f8c8d; border: 1px solid #d5d8dc; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 60px 20px; background: #fff; border-radius: 12px; border: 1px solid #dcdcdc; }
+        .empty-state h3 { font-size: 24px; margin-bottom: 15px; color: #222; }
+        .empty-state p { font-size: 16px; color: #666; margin-bottom: 20px; }
+        .btn-primary { background-color: #222; color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 16px; transition: background-color 0.2s; display: inline-block; }
+        .btn-primary:hover { background-color: #444; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <div class="nav-bar-left-content">
+            <ul class="nav-links-left">
+                <li class="app-name"><a href="/">PartWork</a></li>
+                <li class="nav-link"><a href="/">Home</a></li>
+                <li class="nav-link"><a href="/find_work">Find Work</a></li>
+                <li class="nav-link"><a href="/applications">Applications</a></li>
+                <li class="nav-link"><a href="/my_projects" class="active">My Projects</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-content">
+            <div>
+                <ul class="nav-links-right">
+                    <li class="nav-link"><a href="/dashboard">Dashboard</a></li>
+                    <li class="user-logo" style="cursor: pointer;">
+                        <a href="/logout" style="text-decoration: none; font-size: 24px;" title="Logout">👤</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h2>My Active Projects</h2>
+        </div>
+
+        <div class="app-list">
+            {% for project in projects %}
+                <a href="/job/{{ project.OppID }}" class="app-card">
+                    <div class="app-info">
+                        <h4>{{ project.RoleTitle }}</h4>
+                        <div class="app-meta">🏢 {{ project.BusinessName }} &nbsp;•&nbsp; 📍 {{ project.City }}</div>
+                        <div class="app-date">Status: You are officially hired!</div>
+                    </div>
+                    
+                    <div class="app-status">
+                        {% if project.Status == 'Assigned' %}
+                            <span class="status-badge status-assigned">🚀 Active</span>
+                        {% elif project.Status == 'Funded' %}
+                            <span class="status-badge status-funded">💰 Funded</span>
+                        {% elif project.Status == 'Completed' %}
+                            <span class="status-badge status-completed">✓ Completed</span>
+                        {% else %}
+                            <span class="status-badge status-assigned">{{ project.Status }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            {% else %}
+                <div class="empty-state">
+                    <div style="font-size: 50px; margin-bottom: 20px;">🚀</div>
+                    <h3>No Active Projects</h3>
+                    <p>When an employer accepts your application, your active projects will appear here.</p>
+                    <a href="/applications" class="btn-primary">Check Application Status</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

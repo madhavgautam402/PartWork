@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Find Work</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #000; }
+
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; border-bottom: 1px solid #333; padding: 0 40px; }
+        .nav-bar-left-content, .nav-right-content { display: flex; align-items: center; }
+        .nav-links-left, .nav-links-right, .location-dropbox { display: flex; flex-direction: row; list-style: none; gap: 30px; align-items: center; }
+        
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; transition: color 0.2s; }
+        .nav-link a:hover { color: #fff; }
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+        .location-dropbox { margin-right: 30px; gap: 10px; color: #9f9d9b; }
+
+        .search-content { height: 100px; background-color: #222222; display: flex; justify-content: center; gap: 20px; align-items: center; padding: 0 40px; border-bottom: 1px solid #333; }
+        .search-bar, .work-location-dropbox { height: 55px; background-color: #2d2d2d; border: 1px solid #444; border-radius: 50px; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; color: #e0e0e0; font-size: 16px; font-weight: 500; outline: none; transition: border-color 0.2s, background-color 0.2s; font-family: 'Poppins', sans-serif; }
+        .search-bar:hover, .work-location-dropbox:hover, .search-bar:focus, .work-location-dropbox:focus { border-color: #666; background-color: #333; }
+        
+        .search-bar { width: 750px; } 
+        .work-location-dropbox { width: 300px; cursor: pointer; appearance: none; -webkit-appearance: none; } 
+
+        .main-content { display: flex; flex-direction: row; padding: 40px; gap: 40px; }
+        .explore-job-content { flex: 1; }
+        
+        .heading-job-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .heading-job-content h3 { font-size: 28px; font-weight: 700; }
+
+        .filter-job-content { width: 280px; background-color: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #dcdcdc; height: fit-content; }
+        .filter-job-content h3 { font-size: 24px; font-weight: 700; margin-bottom: 25px; }
+        .filter-category { margin-bottom: 25px; }
+        .filter-category h4 { font-size: 15px; margin-bottom: 15px; font-weight: 700; color: #444; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+        label { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 10px; cursor: pointer; color: #222; }
+        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #222; }
+        
+        .apply-filters-btn { width: 100%; background-color: #222; color: white; border: none; border-radius: 6px; padding: 12px 15px; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background-color 0.2s; }
+        .apply-filters-btn:hover { background-color: #444; }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <div class="nav-bar-left-content">
+            <ul class="nav-links-left">
+                <li class="app-name"><a href="/">PartWork</a></li>
+                <li class="nav-link"><a href="/">Home</a></li>
+                <li class="nav-link"><a href="/find_work">Find Work</a></li>
+                <li class="nav-link"><a href="/applications">Applications</a></li>
+                <li class="nav-link"><a href="/my_projects">My Projects</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-content">
+            <div class="location-dropbox">
+                <span style="font-size: 20px;">📍</span>
+                <select id="nav-location" style="background: transparent; border: none; color: #9f9d9b; font-size: 18px; font-weight: 600; font-family: 'Poppins', sans-serif; outline: none; cursor: pointer;">
+                    <optgroup label="States">
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                    <optgroup label="Union Territories">
+                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra & Nagar Haveli and Daman & Diu</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                        <option value="Ladakh">Ladakh</option>
+                        <option value="Lakshadweep">Lakshadweep</option>
+                        <option value="Puducherry">Puducherry</option>
+                    </optgroup>                 <option value="Tripura">Tripura</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="West Bengal">West Bengal</option>
+                    </optgroup>
+                     
+                </select>
+            </div>
+            <div>
+                <ul class="nav-links-right">
+                    <li class="nav-link"><a href="/dashboard">Dashboard</a></li>
+                    <li class="user-logo" style="cursor: pointer;">
+                        <a href="/logout" style="text-decoration: none; font-size: 24px;" title="Logout">👤</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-content">
+        <input type="text" id="keyword-search" class="search-bar" placeholder="Search By Keyword or Company...">
+        <select id="work-location-search" class="work-location-dropbox">
+            <option value="Any">Any</option>
+            <optgroup label="States">
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+            </optgroup>
+            <optgroup label="Union Territories">
+                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra & Nagar Haveli and Daman & Diu</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                <option value="Ladakh">Ladakh</option>
+                <option value="Lakshadweep">Lakshadweep</option>
+                <option value="Puducherry">Puducherry</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="main-content">
+        <div class="explore-job-content">
+            <div class="heading-job-content">
+                <h3>Explore All Active Opportunities</h3>
+                <div class="sort-job-content" style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-size: 16px; font-weight: 700; margin: 0; color: #444;">Sort by:</label>
+                    <select id="sort-jobs" style="font-size: 15px; font-weight: 600; padding: 6px 12px; border-radius: 6px; border: 1px solid #c0c0c0; outline: none; cursor: pointer; background-color: #fff; color: #222; font-family: 'Poppins', sans-serif;">
+                        <option value="latest">Last updated</option>
+                        <option value="oldest">Oldest listings</option>
+                        <option value="wallet_desc">Wallet (High to Low)</option>
+                        <option value="wallet_asc">Wallet (Low to High)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="job-postings-content" style="display: flex; flex-direction: column; gap: 20px;">
+                {% for job in jobs %}
+                <div class="job-card" onclick="window.location.href='/job/{{ job['OppID'] }}'" style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #dcdcdc; transition: transform 0.2s; cursor: pointer;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <h4 style="font-size: 20px; font-weight: 700; color: #222;">{{ job.RoleTitle }}</h4>
+                        <span style="font-size: 14px; font-weight: 600; color: #666;">📍 {{ job.City }}, {{ job.State }}</span>
+                    </div>
+                    <p style="color: #666; font-size: 15px; font-weight: 500; margin-bottom: 15px;">
+                        🏢 {{ job.BusinessName }} &nbsp;•&nbsp; 💼 {{ job.Type }}
+                    </p>
+                    <p style="font-size: 15px; color: #444; margin-bottom: 20px; line-height: 1.5;">
+                        {{ job.Description[:120] }}...
+                    </p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        {% for skill in job.Skills %}
+                            <span style="background: #e9e9e9; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                    <p style="font-weight:500; font-size:18px;">No opportunities found.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <form class="filter-job-content">
+            <h3>Filters</h3>
+            
+            <div class="filter-category">
+                <h4>Job Type</h4>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="jobType" value="Freelance"> Freelance</label>
+                    <label><input type="checkbox" name="jobType" value="Part-time"> Part-time</label>
+                    <label><input type="checkbox" name="jobType" value="Internship"> Internship</label>
+                    <label><input type="checkbox" name="jobType" value="Full-time"> Full-time</label>
+                </div>
+            </div>
+
+            <div class="filter-category">
+                <h4>Compensation</h4>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="compensation" value="Paid"> Paid</label>
+                    <label><input type="checkbox" name="compensation" value="Unpaid"> Unpaid / Academic</label>
+                </div>
+            </div>
+
+            <div class="filter-category">
+                <h4>Top Skills</h4>
+                <div class="checkbox-group">
+                    {% for skill in all_skills %}
+                        <label><input type="checkbox" name="skill" value="{{ skill }}"> {{ skill }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <button type="submit" class="apply-filters-btn">Apply Filters</button>
+            <a href="/find_work" style="display:block; text-align:center; margin-top:15px; color:#666; font-size:14px; text-decoration:none; font-weight:500;">Clear Filters</a>
+        </form>        
+    </div>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.querySelector('.filter-job-content');
+            const jobsContainer = document.querySelector('.job-postings-content');
+            const keywordInput = document.getElementById('keyword-search');
+            const mainLocation = document.getElementById('work-location-search');
+            const sortDropdown = document.getElementById('sort-jobs');
+            const applyBtn = document.querySelector('.apply-filters-btn');
+
+            mainLocation.addEventListener('change', fetchJobs);
+            sortDropdown.addEventListener('change', fetchJobs);
+            filterForm.addEventListener('submit', function(e) { e.preventDefault(); fetchJobs(); });
+            
+            let typingTimer;
+            keywordInput.addEventListener('keyup', () => {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(fetchJobs, 300);
+            });
+
+            function fetchJobs() {
+                applyBtn.innerText = "Applying...";
+
+                const keyword = keywordInput.value.trim();
+                const location = mainLocation.value;
+                const sort = sortDropdown.value;
+
+                const jobTypes = Array.from(document.querySelectorAll('input[name="jobType"]:checked')).map(cb => cb.value);
+                const compensations = Array.from(document.querySelectorAll('input[name="compensation"]:checked')).map(cb => cb.value);
+                const skills = Array.from(document.querySelectorAll('input[name="skill"]:checked')).map(cb => cb.value);
+
+                const params = new URLSearchParams();
+                if (keyword) params.append('q', keyword);
+                if (location && location !== 'Any') params.append('loc', location);
+                params.append('sort', sort);
+                jobTypes.forEach(t => params.append('jobType', t));
+                compensations.forEach(c => params.append('compensation', c));
+                skills.forEach(s => params.append('skill', s));
+
+                fetch(`/api/filter_jobs?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(jobs => {
+                        jobsContainer.innerHTML = '';
+                        if (jobs.length === 0) {
+                            jobsContainer.innerHTML = '<p style="font-weight:500; font-size:18px;">No opportunities match your current search.</p>';
+                        } else {
+                            jobs.forEach(job => {
+                                const skillsHtml = job.Skills.map(skill => 
+                                    `<span style="background: #e9e9e9; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">${skill}</span>`
+                                ).join('');
+
+                                const shortDesc = job.Description ? job.Description.substring(0, 120) + '...' : 'No description provided.';
+                                const stateDisplay = job.State ? job.State : '';
+                                const card = `
+                                    <div class="job-card" onclick="window.location.href='/job/${job.OppID}'" style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #dcdcdc; transition: transform 0.2s; cursor: pointer;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                            <h4 style="font-size: 20px; font-weight: 700; color: #222;">${job.RoleTitle}</h4>
+                                            <span style="font-size: 14px; font-weight: 600; color: #666;">📍 ${job.City}, ${stateDisplay}</span>
+                                        </div>
+                                        <p style="color: #666; font-size: 15px; font-weight: 500; margin-bottom: 15px;">
+                                            🏢 ${job.BusinessName} &nbsp;•&nbsp; 💼 ${job.Type}
+                                        </p>
+                                        <p style="font-size: 15px; color: #444; margin-bottom: 20px; line-height: 1.5;">
+                                            ${shortDesc}
+                                        </p>
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                            ${skillsHtml}
+                                        </div>
+                                    </div>
+                                `;
+                                jobsContainer.insertAdjacentHTML('beforeend', card);
+                            });
+                        }
+                        applyBtn.innerText = "Apply Filters";
+                    })
+                    .catch(error => {
+                        console.error('Error fetching jobs:', error);
+                        applyBtn.innerText = "Apply Filters";
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

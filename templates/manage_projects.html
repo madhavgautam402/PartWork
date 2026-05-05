@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Manage Projects - PartWork</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #222; }
+
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; padding: 0 40px; }
+        .nav-links-left, .nav-links-right { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; }
+        .nav-link a:hover, .nav-link a.active { color: #fff; } 
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+
+        .main-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #222; padding-bottom: 10px; border-bottom: 2px solid #dcdcdc; }
+
+        .job-grid { display: flex; flex-direction: column; gap: 15px; margin-bottom: 50px; }
+        .job-card { background: #fff; padding: 25px; border-radius: 12px; border: 1px solid #dcdcdc; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.2s; text-decoration: none; color: inherit; }
+        .job-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        
+        .job-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+        .job-meta { font-size: 14px; color: #666; font-weight: 500; }
+        
+        .badge { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+        .badge-active { background: #eafaf1; color: #27ae60; }
+        .badge-assigned { background: #ebf5fb; color: #2980b9; }
+        .badge-completed { background: #f2f3f4; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <ul class="nav-links-left">
+            <li class="app-name"><a href="/">PartWork</a></li>
+            <li class="nav-link"><a href="/">Overview</a></li>
+            <li class="nav-link"><a href="/hire_students">Hire Students</a></li>
+            <li class="nav-link"><a href="/manage_projects" class="active">Manage Projects</a></li>
+        </ul>
+        <ul class="nav-links-right">
+            <li class="nav-link"><a href="/dashboard">Dashboard</a></li>
+            <li class="user-logo"><a href="/logout" style="text-decoration: none; font-size: 24px;">🏢</a></li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #dcdcdc; padding-bottom: 10px;">
+            <h2 class="section-title" style="border: none; margin: 0; padding: 0;">Active & In-Progress Opportunities</h2>
+            <a href="/post_job" style="background: #222; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; transition: background 0.2s;">+ Post Opportunity</a>
+        </div>
+        <div class="job-grid">
+            {% for job in active %}
+            <a href="/manage_job/{{ job.OppID }}" class="job-card">
+                <div>
+                    <div class="job-title">{{ job.RoleTitle }}</div>
+                    <div class="job-meta">📍 {{ job.City }}, {{ job.State }} &nbsp;•&nbsp; 👥 {{ job.AppCount }} Applicants</div>
+                </div>
+                <div>
+                    {% if job.Status == 'Active' %}
+                        <span class="badge badge-active">🟢 Active</span>
+                    {% else %}
+                        <span class="badge badge-assigned">🚀 {{ job.Status }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% else %}
+                <p>No active projects found.</p>
+            {% endfor %}
+        </div>
+
+        <h2 class="section-title">Completed Projects</h2>
+        <div class="job-grid">
+            {% for job in completed %}
+            <a href="/manage_job/{{ job.OppID }}" class="job-card" style="opacity: 0.7;">
+                <div>
+                    <div class="job-title">{{ job.RoleTitle }}</div>
+                    <div class="job-meta">📍 {{ job.City }}, {{ job.State }}</div>
+                </div>
+                <div><span class="badge badge-completed">✓ Completed</span></div>
+            </a>
+            {% else %}
+                <p>No completed projects yet.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register - PartWork</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #222;
+            --accent: #27ae60;
+            --error: #c0392b;
+            --bg: #e9e9e9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: #fff;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid #dcdcdc;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            font-size: 20px;
+            font-weight: 700;
+            color: #888;
+            cursor: pointer;
+            padding-bottom: 10px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { background: #444; }
+
+        .flash-messages {
+            background: #fdedec;
+            color: var(--error);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #f5b7b1;
+        }
+
+        #register-form { display: none; }
+        
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            padding: 10px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .role-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+
+    <div class="heading" style="display:flex; justify-content: center; align-items: center; margin-bottom: 20px"><h1>PartWork</h1></div>
+     
+    <div class="auth-tabs">
+        <div class="tab active" id="tab-login" onclick="showForm('login')">Login</div>
+        <div class="tab" id="tab-register" onclick="showForm('register')">Register</div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash-messages">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form id="login-form" action="/login" method="POST">
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-input" placeholder="example@email.com" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-submit">Sign In</button>
+    </form>
+
+    <form id="register-form" onsubmit="handleRegistration(event)">
+        <label>I am a...</label>
+        <div class="role-selector">
+            <div class="role-btn active" id="role-student" onclick="setRole('Student')">Student</div>
+            <div class="role-btn" id="role-employer" onclick="setRole('Employer')">Employer</div>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="email@university.edu" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 characters" required>
+        </div>
+
+        <div id="student-only">
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>First Name</label>
+                    <input type="text" id="reg-fname" class="form-input">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Last Name</label>
+                    <input type="text" id="reg-lname" class="form-input">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>University / College</label>
+                <input type="text" id="reg-uni" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Zipcode</label>
+                <input type="text" id="reg-zip" class="form-input">
+            </div>
+        </div>
+
+        <div id="employer-only" style="display: none;">
+            <div class="form-group">
+                <label>Business / Company Name</label>
+                <input type="text" id="reg-biz" class="form-input">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="reg-btn">Create Account</button>
+    </form>
+</div>
+
+<script>
+    let currentRole = 'Student';
+
+    function showForm(type) {
+        const loginForm = document.getElementById('login-form');
+        const regForm = document.getElementById('register-form');
+        const tabLogin = document.getElementById('tab-login');
+        const tabReg = document.getElementById('tab-register');
+
+        if (type === 'login') {
+            loginForm.style.display = 'block';
+            regForm.style.display = 'none';
+            tabLogin.classList.add('active');
+            tabReg.classList.remove('active');
+        } else {
+            loginForm.style.display = 'none';
+            regForm.style.display = 'block';
+            tabLogin.classList.remove('active');
+            tabReg.classList.add('active');
+        }
+    }
+
+    function setRole(role) {
+        currentRole = role;
+        document.getElementById('role-student').classList.toggle('active', role === 'Student');
+        document.getElementById('role-employer').classList.toggle('active', role === 'Employer');
+        
+        document.getElementById('student-only').style.display = role === 'Student' ? 'block' : 'none';
+        document.getElementById('employer-only').style.display = role === 'Employer' ? 'block' : 'none';
+    }
+
+    function handleRegistration(e) {
+        e.preventDefault();
+        const btn = document.getElementById('reg-btn');
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        const payload = {
+            role: currentRole,
+            email: document.getElementById('reg-email').value,
+            password: document.getElementById('reg-password').value,
+            fname: document.getElementById('reg-fname').value,
+            lname: document.getElementById('reg-lname').value,
+            uni: document.getElementById('reg-uni').value,
+            zip: document.getElementById('reg-zip').value,
+            biz_name: document.getElementById('reg-biz').value
+        };
+         
+        console.log("Sending Payload:", payload);
+
+        fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Account created successfully! Please log in.");
+                location.reload();
+            } else {
+                alert("Error: " + data.message);
+                btn.innerText = "Create Account";
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            alert("Network error.");
+            btn.innerText = "Create Account";
+            btn.disabled = false;
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Manage {{ job.RoleTitle }} - PartWork</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #222; }
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; padding: 0 40px; }
+        .nav-links-left, .nav-links-right { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; }
+        .nav-link a:hover, .nav-link a.active { color: #fff; } 
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+        
+        .header-section { background: #fff; padding: 40px; border-bottom: 1px solid #dcdcdc; margin-bottom: 30px; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; padding-bottom: 50px; }
+        .top-row { display: flex; gap: 30px; align-items: flex-start; margin-bottom: 30px; }
+        .col-left { flex: 1.5; }
+        .col-right { flex: 1; }
+        
+        .card { background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #dcdcdc; margin-bottom: 25px; }
+        .card-full { background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #dcdcdc; margin-bottom: 25px; width: 100%; }
+        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; border-bottom: 2px solid #e9e9e9; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #666; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; 
+            font-family: 'Poppins'; outline: none; transition: border-color 0.2s, background-color 0.2s; 
+        }
+        
+        .input-error { border: 2px solid #c0392b !important; background-color: #fdf2f2 !important; }
+
+        .btn-action { background: #222; color: #fff; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; font-family: 'Poppins'; }
+        .btn-accept { background: #27ae60; color: #fff; padding: 8px 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .btn-reject { background: #fdedec; color: #c0392b; padding: 8px 12px; border: 1px solid #f5b7b1; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .btn-view { background: #e9e9e9; color: #222; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+        
+        .app-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #dcdcdc; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .badge-status { font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 6px; background: #f2f3f4; }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <ul class="nav-links-left">
+            <li class="app-name"><a href="/">PartWork</a></li>
+            <li class="nav-link"><a href="/manage_projects" class="active">Manage Projects</a></li>
+        </ul>
+        <ul class="nav-links-right">
+            <li class="nav-link"><a href="/dashboard">Dashboard</a></li>
+            <li class="user-logo"><a href="/logout" style="text-decoration: none; font-size: 24px;">🏢</a></li>
+        </ul>
+    </div>
+
+    <div class="header-section">
+        <div class="header-content">
+            <div>
+                <a href="/manage_projects" style="color: #666; text-decoration: none; font-size: 14px;">&larr; Back to Projects</a>
+                <h1 style="font-size: 32px; font-weight: 700; margin-top: 5px;">{{ job.RoleTitle }}</h1>
+            </div>
+            <div><span style="background: #222; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 700;">Status: {{ job.Status }}</span></div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="top-row">
+            
+            <div class="col-left">
+                {% if job.Status == 'Funded' and job.HiredApplicants|length > 0 %}
+                    <button type="button" onclick="document.getElementById('ratingModal').style.display='flex'" style="background: #27ae60; color: #fff; padding: 15px 20px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-family: 'Poppins'; margin-bottom: 25px; width: 100%; font-size: 16px;">
+                        ★ Finalize Project & Rate Team
+                    </button>
+                {% endif %}
+
+                <div class="card" style="margin-bottom: 0;">
+                    <h2 class="section-title">Edit Opportunity Details</h2>
+                    <div class="form-group">
+                        <label>Role Title</label>
+                        <input type="text" id="edit-title" value="{{ job.RoleTitle }}">
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Job Type</label>
+                            <select id="edit-type">
+                                <option value="Freelance" {% if job.Type == 'Freelance' %}selected{% endif %}>Freelance</option>
+                                <option value="Part-time" {% if job.Type == 'Part-time' %}selected{% endif %}>Part-time</option>
+                                <option value="Internship" {% if job.Type == 'Internship' %}selected{% endif %}>Internship</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Required Students</label>
+                            <input type="number" id="edit-req" value="{{ job.RequiredStudents }}" min="1">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>State</label>
+                            <select id="edit-state" onchange="updateCities()">
+                                <option value="" disabled>Select State...</option>
+                                {% for state in city_data.keys()|sort %}
+                                    <option value="{{ state }}" {% if job.State == state %}selected{% endif %}>{{ state }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1;">
+                            <label>City</label>
+                            <select id="edit-city" disabled>
+                                <option value="">Select State first...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Required Skills</label>
+                        <div id="selected-skills-list" style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                        
+                        <input type="text" id="edit-skill-search" placeholder="Search skills to filter..." onkeyup="filterEditSkills()" style="margin-bottom: 10px;">
+                        <div class="skills-checkbox-container" id="edit-skills-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 15px; background: #fdfdfd; display: flex; flex-direction: column; gap: 10px;">
+                            {% for skill in skills_list %}
+                                <label class="edit-skill-label" style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: #222; padding: 5px; border-radius: 4px; transition: background 0.2s;">
+                                    <input type="checkbox" class="edit-job-skill-checkbox" value="{{ skill }}" {% if skill in job.Skills %} checked {% endif %} style="width: 18px; height: 18px; cursor: pointer; accent-color: #222;">
+                                    <span class="edit-skill-name">{{ skill }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="edit-desc" rows="4">{{ job.Description }}</textarea>
+                    </div>
+                    <button type="button" class="btn-action" onclick="saveJobDetails()">Save Changes</button>
+                    <div id="save-msg" style="text-align: center; margin-top: 10px; font-weight: 600; font-size: 14px;"></div>
+                </div>
+            </div>
+
+            <div class="col-right">
+                {% if job.HiredApplicants|length > 0 %}
+                    <div style="background: #f0f8ff; border: 1px solid #cce5ff; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                        <h3 style="color: #004085; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #cce5ff; padding-bottom: 8px;">Active Project Team ({{ job.HiredApplicants|length }} Hired)</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            {% for applicant in job.HiredApplicants %}
+                                <span style="background: #004085; color: #fff; padding: 6px 12px; border-radius: 50px; font-size: 14px; font-weight: 600;">
+                                    👤 {{ applicant.FirstName }} {{ applicant.LastName }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if job.HiredApplicants|length < job.RequiredStudents %}
+                    <h2 class="section-title">Review Applicants</h2>
+                    {% for app in applicants %}
+                        <div class="app-card">
+                            <div>
+                                <div style="font-size: 18px; font-weight: 700;">{{ app.FirstName }} {{ app.LastName }}</div>
+                                <div style="font-size: 14px; color: #d35400; font-weight: 600; margin-bottom: 10px;">★ {{ app.AvgImpact if app.AvgImpact else 'New' }} Reliability</div>
+                                <a href="/student/{{ app.StudentID }}" target="_blank" class="btn-view">View Profile</a>
+                            </div>
+                            
+                            <div>
+                                {% if job.Status == 'Active' %}
+                                    {% if app.Status == 'Pending' %}
+                                        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                                            <button class="btn-accept" style="width: 100%;" onclick="acceptApplicant('{{ app.ApplicationID }}')">Accept Instantly</button>
+                                            <button class="btn-view" style="background: #ebf5fb; color: #2980b9; border: 1px solid #a9cce3; width: 100%; padding: 8px;" onclick="openInterviewModal('{{ app.ApplicationID }}')">📅 Schedule Interview</button>
+                                        </div>
+                                    {% elif app.Status == 'Interviewing' %}
+                                        <div style="text-align: right; background: #fff5f5; border: 1px solid #f5b7b1; padding: 12px; border-radius: 8px; min-width: 180px;">
+                                            <span style="font-size: 12px; font-weight: 700; color: #c0392b; letter-spacing: 0.5px;">📅 INTERVIEW SET</span>
+                                            <div style="font-size: 13px; color: #222; margin-top: 5px; font-weight: 600;">{{ app.ScheduledAt }}</div>
+                                            <div style="font-size: 12px; color: #444; margin-bottom: 5px; margin-top: 2px;">Format: <strong>{{ app.MeetingType }}</strong></div>
+                                            
+                                            <div style="background: #fff; padding: 8px; border-radius: 6px; border: 1px dashed #f5b7b1; margin-bottom: 12px; text-align: left;">
+                                                <span style="font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase;">📍 Link / Location:</span>
+                                                <div style="font-size: 13px; color: #222; margin-top: 3px; word-wrap: break-word;">
+                                                    {{ app.MeetingLink }}
+                                                </div>
+                                            </div>
+                                            
+                                            <button class="btn-accept" style="width: 100%; font-size: 12px;" onclick="acceptApplicant('{{ app.ApplicationID }}')">Accept Post-Interview</button>
+                                        </div>
+                                    {% else %}
+                                        <span class="badge-status">{{ app.Status }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge-status">{{ app.Status }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card" style="text-align: center; padding: 20px;"><p style="color: #666; font-size: 14px;">No applicants yet.</p></div>
+                    {% endfor %}
+                {% endif %}
+
+                <h2 class="section-title" style="margin-top: 40px;">Manage Milestones</h2>
+                {% for ms in job.Milestones %}
+                    <div class="app-card" id="ms-view-{{ ms.MilestoneID }}" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                        <div style="width: 100%; display: flex; justify-content: space-between;">
+                            <div style="font-weight: 700;">{{ ms.Description }}</div>
+                            <div style="font-weight: 700; color: #27ae60;">${{ ms.Payout }}</div>
+                        </div>
+                        <div style="font-size: 13px; color: #666;">Deadline: {{ ms.Deadline }}</div>
+                        
+                        <div style="margin-top: 10px; width: 100%; display: flex; gap: 10px; align-items: center;">
+                            {% if ms.ApprovalStatus == 'Submitted' %}
+                                <button class="btn-accept" onclick="approveMilestone('{{ ms.MilestoneID }}', '{{ job.OppID }}')">✓ Approve & Pay</button>
+                                <button class="btn-reject" onclick="rejectMilestone('{{ ms.MilestoneID }}')">✕ Reject</button>
+                            {% elif ms.ApprovalStatus == 'Pending' %}
+                                <span class="badge-status">Pending Work</span>
+                                {% if job.Status != 'Completed' %}
+                                    <button onclick="toggleEdit('{{ ms.MilestoneID }}')" class="btn-view">Edit</button>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge-status" style="background: #eafaf1; color: #27ae60;">✓ Paid out</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="app-card" id="ms-edit-{{ ms.MilestoneID }}" style="display: none; flex-direction: column; gap: 10px;">
+                        <input type="text" id="edit-desc-{{ ms.MilestoneID }}" value="{{ ms.Description }}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Poppins'; outline: none;">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="edit-payout-{{ ms.MilestoneID }}" value="{{ ms.Payout }}" style="width: 50%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Poppins'; background-color: #f5f5f5; color: #888;" readonly disabled>
+                            <input type="date" id="edit-date-{{ ms.MilestoneID }}" class="inline-ms-date" value="{{ ms.Deadline }}" style="width: 50%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Poppins'; outline: none;">
+                        </div>
+                        <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px;">
+                            <button class="btn-accept" style="flex: 1;" onclick="saveMilestone('{{ ms.MilestoneID }}')">Save</button>
+                            <button class="btn-view" style="flex: 1;" onclick="toggleEdit('{{ ms.MilestoneID }}')">Cancel</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if job.HiredApplicants|length > 0 %}
+        <div class="card-full">
+            <h2 class="section-title">Project Issues & Disputes</h2>
+            
+            {% if job.Status != 'Completed' %}
+                <div style="background: #fff; padding: 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #dcdcdc;">
+                    <label style="font-size: 13px; font-weight: 700; color: #222; letter-spacing: 0.5px;">⚠️ RAISE AN ISSUE</label>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Select a student from the team to log a formal warning against.</p>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <select id="feed-app-id" style="flex: 1; min-width: 150px; padding: 12px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                            <option value="" disabled selected>Target Student...</option>
+                            {% for applicant in job.HiredApplicants %}
+                                <option value="{{ applicant.ApplicationID }}">{{ applicant.FirstName }} {{ applicant.LastName }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <select id="feed-metric" style="flex: 1; min-width: 150px; padding: 12px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                            <option value="" disabled selected>Select Issue Type...</option>
+                            <option value="Unresponsive">Unresponsive / Poor Communication</option>
+                            <option value="Missed Deadline">Missed Deadline</option>
+                            <option value="Poor Quality">Poor Quality of Work</option>
+                            <option value="Unprofessional">Unprofessional Conduct</option>
+                        </select>
+                        <select id="feed-score" style="flex: 0.5; min-width: 120px; padding: 12px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                            <option value="3">Minor Issue (3)</option>
+                            <option value="2">Moderate Issue (2)</option>
+                            <option value="1">Severe Issue (1)</option>
+                        </select>
+                        <input type="text" id="feed-comment" placeholder="Describe the problem..." style="flex: 2; min-width: 200px; padding: 12px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                        <button onclick="submitFeedback()" style="background: #222; color: #fff; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Poppins';">File Report</button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div style="margin-bottom: 40px;">
+                {% for entry in job.Feedback %}
+                    {% if entry.MetricType != 'Final Project Rating' %}
+                    <div style="padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; {% if entry.Refuted == 'Y' %} opacity: 0.6; background: #f9f9f9; border-left: 4px solid #ccc; {% else %} background: #fff; border-left: 4px solid #222; {% endif %}">
+                        <div style="font-size: 15px;">
+                            <span style="font-weight: 700; color: #222; margin-right: 10px;">⚠️ ISSUE REPORTED</span>
+                            <span style="font-weight: 600; color: #222;">{{ entry.ReviewerRole }} ({{ entry.MetricType }}):</span>
+                            <span style="color: #444; margin-left: 5px; font-style: italic;">"{{ entry.FeedbackDescription }}"</span>
+                        </div>
+                        {% if entry.ReviewerRole != session.get('role').capitalize() and entry.Refuted == 'N' %}
+                            <button onclick="refuteEntry('{{ entry.RecordID }}')" style="background: #e9e9e9; color: #222; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700; border: 1px solid #dcdcdc; cursor: pointer;">Refute Claim</button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% else %}
+                     <p style="color: #666; font-size: 14px; text-align: center; padding: 20px;">No issues reported on this project.</p>            
+                {% endfor %}
+            </div>
+
+            <h2 class="section-title">Project Group Chat</h2>
+            <div style="background: #fff; border: 1px solid #dcdcdc; border-radius: 12px; display: flex; flex-direction: column; height: 400px;">
+                <div style="padding: 15px 20px; background: #222; color: #fff; border-radius: 12px 12px 0 0; font-weight: 700;">
+                    💬 Group Message Room
+                </div>
+                <div id="chat-box" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #fdfdfd;"></div>
+                <div style="padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; background: #fff; border-radius: 0 0 12px 12px;">
+                    <input type="text" id="chat-input" placeholder="Type a message to the team..." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                    <button onclick="sendChatMessage()" style="background: #27ae60; color: #fff; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Poppins';">Send</button>
+                </div>
+            </div>
+        </div>
+        {% endif %} 
+    </div>
+
+    <div id="ratingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div style="font-size: 40px; margin-bottom: 10px;">⭐</div>
+            <h3 style="margin-bottom: 10px; font-size: 22px; font-weight: 700; color: #222;">Rate the Team</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Submit a final rating. This will close the project and update the platform score for the entire team.</p>
+            <div style="text-align: left; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Quality of Work</label>
+                    <select id="rate-quality" class="rate-input">
+                        <option value="5">5 - Exceptional</option>
+                        <option value="4">4 - Good</option>
+                        <option value="3">3 - Average</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="1">1 - Terrible</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Communication</label>
+                    <select id="rate-comm" class="rate-input">
+                        <option value="5">5 - Always responsive</option>
+                        <option value="4">4 - Decent</option>
+                        <option value="3">3 - Okay</option>
+                        <option value="2">2 - Slow</option>
+                        <option value="1">1 - Ghosted me</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Professionalism</label>
+                    <select id="rate-pro" class="rate-input">
+                        <option value="5">5 - Highly Professional</option>
+                        <option value="4">4 - Good</option>
+                        <option value="3">3 - Neutral</option>
+                        <option value="2">2 - Rude/Unfit</option>
+                        <option value="1">1 - Hostile</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="submitFinalRating('{{ job.OppID }}')" style="background: #222; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Poppins';">Complete Project</button>
+                <button onclick="document.getElementById('ratingModal').style.display='none'" style="background: #e9e9e9; color: #222; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Poppins';">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="interviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 15px; font-size: 20px; font-weight: 700; color: #222;">📅 Schedule Interview</h3>
+            
+            <input type="hidden" id="int-app-id">
+            
+            <div class="form-group">
+                <label>Date & Time</label>
+                <input type="datetime-local" id="int-time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+            </div>
+            
+            <div class="form-group">
+                <label>Meeting Format</label>
+                <select id="int-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                    <option value="Zoom">Zoom</option>
+                    <option value="Google Meet">Google Meet</option>
+                    <option value="In-Person">In-Person</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Meeting Link / Location Address</label>
+                <input type="text" id="int-link" placeholder="Enter link or address..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="submitInterview()" style="background: #222; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Poppins';">Schedule</button>
+                <button onclick="document.getElementById('interviewModal').style.display='none'" style="background: #e9e9e9; color: #222; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Poppins';">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stateCityData = {{ city_data | tojson | safe }};
+        const existingCity = "{{ job.City }}"; 
+        const currentlyHired = {{ job.HiredApplicants|length | default(0) }};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('edit-state').value) {
+                updateCities(false); 
+                document.getElementById('edit-city').value = existingCity; 
+            }
+
+            updateDisplay(); 
+            document.querySelectorAll('.edit-job-skill-checkbox').forEach(cb => {
+                cb.addEventListener('change', updateDisplay);
+            });
+
+            // Milestone Date Constraints
+            const today = new Date();
+            const todayISO = today.toISOString().split('T')[0];
+            document.querySelectorAll('.inline-ms-date').forEach(el => {
+                el.min = todayISO;
+                if(el.value && el.value < todayISO) {
+                    el.classList.add('input-error'); 
+                }
+            });
+
+            // Interview Date Constraints (Block Past Dates/Times)
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const intTimeInput = document.getElementById('int-time');
+            if (intTimeInput) {
+                intTimeInput.min = now.toISOString().slice(0, 16);
+                intTimeInput.onchange = function() {
+                    if (this.value && this.value < this.min) {
+                        this.value = "";
+                        alert("Interviews cannot be scheduled in the past.");
+                    }
+                };
+            }
+        });
+
+        function updateCities(flash = true) {
+            const stateSelect = document.getElementById('edit-state');
+            const citySelect = document.getElementById('edit-city');
+            const selectedState = stateSelect.value;
+
+            citySelect.innerHTML = '<option value="" disabled selected>Select City...</option>';
+
+            if (selectedState && stateCityData[selectedState]) {
+                citySelect.disabled = false;
+                stateCityData[selectedState].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.innerText = city;
+                    citySelect.appendChild(option);
+                });
+                
+                if(flash) {
+                    citySelect.style.borderColor = '#27ae60';
+                    setTimeout(() => citySelect.style.borderColor = '#ccc', 1000);
+                    citySelect.classList.remove('input-error');
+                }
+            } else {
+                citySelect.disabled = true;
+            }
+        }
+
+        function filterEditSkills() {
+            const query = document.getElementById('edit-skill-search').value.toLowerCase();
+            const labels = document.querySelectorAll('.edit-skill-label');
+            labels.forEach(label => {
+                const name = label.querySelector('.edit-skill-name').innerText.toLowerCase();
+                label.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        function updateDisplay() {
+            const displayArea = document.getElementById('selected-skills-list');
+            displayArea.innerHTML = "";
+            const checkedBoxes = document.querySelectorAll('.edit-job-skill-checkbox:checked');
+
+            checkedBoxes.forEach(cb => {
+                const badge = document.createElement('span');
+                badge.innerText = cb.value;
+                badge.style.cssText = "background:#222; color:#fff; padding:5px 12px; border-radius:15px; font-size:12px; font-weight:600; cursor:pointer;";
+                
+                badge.onclick = function() {
+                    cb.checked = false;
+                    updateDisplay();
+                };
+                displayArea.appendChild(badge);
+            });
+            
+            if (checkedBoxes.length === 0) {
+                displayArea.innerHTML = "<span style='color:#999; font-size:13px;'>No skills selected</span>";
+            }
+        }
+
+        function saveJobDetails() {
+            const msgBox = document.getElementById('save-msg');
+            msgBox.innerText = "";
+            
+            const fields = [
+                { id: 'edit-title', name: 'Role Title' },
+                { id: 'edit-desc', name: 'Description' },
+                { id: 'edit-city', name: 'City' },
+                { id: 'edit-state', name: 'State' }
+            ];
+
+            let firstErrorElement = null;
+            let hasErrors = false;
+
+            fields.forEach(field => {
+                const el = document.getElementById(field.id);
+                const val = el.value ? el.value.trim() : "";
+
+                if (!val || val === "Select State first...") {
+                    el.classList.add('input-error');
+                    hasErrors = true;
+                    if (!firstErrorElement) firstErrorElement = el;
+
+                    el.oninput = () => el.classList.remove('input-error');
+                    el.onchange = () => el.classList.remove('input-error');
+                } else {
+                    el.classList.remove('input-error');
+                }
+            });
+
+            // Strict Validation for Students Needed vs Hired Count
+            const reqInput = document.getElementById('edit-req');
+            const reqVal = parseInt(reqInput.value);
+
+            if (!reqVal || reqVal < 1) {
+                reqInput.classList.add('input-error');
+                hasErrors = true;
+                if (!firstErrorElement) firstErrorElement = reqInput;
+                msgBox.innerText = "Error: You must require at least 1 student.";
+                reqInput.oninput = () => reqInput.classList.remove('input-error');
+            } else if (reqVal < currentlyHired) {
+                reqInput.classList.add('input-error');
+                hasErrors = true;
+                if (!firstErrorElement) firstErrorElement = reqInput;
+                msgBox.innerText = `Error: You already have ${currentlyHired} hired student(s). You cannot set the requirement below this.`;
+                reqInput.oninput = () => reqInput.classList.remove('input-error');
+            }
+
+            if (hasErrors) {
+                if (!msgBox.innerText) msgBox.innerText = "Please fix the highlighted fields.";
+                msgBox.style.color = "#c0392b";
+                firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const selectedSkills = Array.from(document.querySelectorAll('.edit-job-skill-checkbox:checked')).map(cb => cb.value);
+            
+            const payload = {
+                opp_id: '{{ job.OppID }}', 
+                title: document.getElementById('edit-title').value.trim(), 
+                type: document.getElementById('edit-type').value, 
+                req_students: reqVal, 
+                city: document.getElementById('edit-city').value, 
+                state: document.getElementById('edit-state').value, 
+                skills: selectedSkills, 
+                desc: document.getElementById('edit-desc').value.trim()
+            };
+
+            const btn = document.querySelector('.btn-action');
+            btn.innerText = "Saving Changes...";
+            btn.disabled = true;
+
+            fetch('/api/edit_job', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            }).then(res => res.json()).then(res => {
+                if(res.success) { 
+                    location.reload(); 
+                } else { 
+                    msgBox.innerText = res.message; 
+                    msgBox.style.color = '#c0392b'; 
+                    btn.innerText = "Save Changes";
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // --- ORIGINAL LOGIC FOR APPLICANTS, MILESTONES, FEEDBACK, CHAT ---
+        function acceptApplicant(appId) {
+            if(!confirm("Hire this student?")) return;
+            fetch('/api/accept_applicant', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app_id: appId })
+            }).then(res => res.json()).then(res => { location.reload(); });
+        }
+
+        function toggleEdit(id) {
+            const viewDiv = document.getElementById(`ms-view-${id}`);
+            const editDiv = document.getElementById(`ms-edit-${id}`);
+            if (viewDiv.style.display === 'none') { viewDiv.style.display = 'flex'; editDiv.style.display = 'none'; } else { viewDiv.style.display = 'none'; editDiv.style.display = 'flex'; }
+        }
+
+        function saveMilestone(id) {
+            const dateInput = document.getElementById(`edit-date-${id}`);
+            if(dateInput.value < new Date().toISOString().split('T')[0]) {
+                alert("Deadline cannot be in the past.");
+                return;
+            }
+
+            fetch('/api/edit_milestone', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ milestone_id: id, desc: document.getElementById(`edit-desc-${id}`).value, payout: document.getElementById(`edit-payout-${id}`).value, deadline: dateInput.value })
+            }).then(res => res.json()).then(data => { if(data.success) location.reload(); });
+        }
+
+        function approveMilestone(msId, oppId) {
+            if(!confirm("Approve work? This releases escrow funds to the student.")) return;
+            fetch('/api/approve_milestone', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ milestone_id: msId, opp_id: oppId }) }).then(res => res.json()).then(data => { location.reload(); });
+        }
+
+        function rejectMilestone(msId) {
+            if(!confirm("Reject work? It will be sent back to the student.")) return;
+            fetch('/api/reject_milestone', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ milestone_id: msId }) }).then(res => res.json()).then(data => { location.reload(); });
+        }
+
+        function submitFeedback() {
+            const appId = document.getElementById('feed-app-id').value;
+            const metric = document.getElementById('feed-metric').value;
+            const comment = document.getElementById('feed-comment').value;
+            const score = document.getElementById('feed-score').value;
+            
+            if(!appId || !metric || !comment) return alert("Please select a Target Student, Issue Type, and Description.");
+            
+            fetch('/api/post_feedback', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ app_id: appId, metric: metric, comment: comment, score: score })
+            }).then(res => res.json()).then(data => { if(data.success) location.reload(); });
+        }
+
+        function refuteEntry(id) {
+            if(!confirm("Refute this claim? An admin will investigate.")) return;
+            fetch('/api/refute_feedback', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ record_id: id }) }).then(res => res.json()).then(data => { if(data.success) location.reload(); });
+        }
+
+        function submitFinalRating(oppId) {
+            const ratings = {
+                'Quality of Work': document.getElementById('rate-quality').value,
+                'Communication': document.getElementById('rate-comm').value,
+                'Professionalism': document.getElementById('rate-pro').value
+            };
+
+            fetch('/api/complete_and_rate', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ opp_id: oppId, ratings: ratings }) 
+            }).then(res => res.json()).then(data => { 
+                if(data.success) {
+                    window.location.reload(); 
+                } else {
+                    alert("Error submitting form.");
+                }
+            });
+        }
+
+        function openInterviewModal(appId) {
+            document.getElementById('int-app-id').value = appId;
+            document.getElementById('interviewModal').style.display = 'flex';
+        }
+
+        function submitInterview() {
+            const appId = document.getElementById('int-app-id').value;
+            const time = document.getElementById('int-time').value;
+            const type = document.getElementById('int-type').value;
+            const link = document.getElementById('int-link').value;
+            
+            if(!time || !type || !link) return alert("Please provide the time, format, and meeting link.");
+            
+            fetch('/api/schedule_interview', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ app_id: appId, scheduled_time: time, meeting_type: type, meeting_link: link })
+            }).then(res => res.json()).then(data => {
+                if(data.success) location.reload();
+                else alert(data.message);
+            });
+        }
+
+        const chatOppId = '{{ job.OppID }}';
+        
+        function loadChatMessages() {
+            fetch(`/api/get_messages/${chatOppId}`).then(res => res.json()).then(data => {
+                const chatBox = document.getElementById('chat-box');
+                if (chatBox.children.length !== data.messages.length) {
+                    chatBox.innerHTML = ''; 
+                    data.messages.forEach(msg => {
+                        const isMe = msg.SenderName === data.my_name; 
+                        const align = isMe ? 'flex-end' : 'flex-start';
+                        const bgColor = isMe ? '#222' : '#e9e9e9';
+                        const textColor = isMe ? '#fff' : '#222';
+                        
+                        chatBox.innerHTML += `<div style="align-self: ${align}; max-width: 75%; display: flex; flex-direction: column;"><div style="font-size: 11px; color: #888; margin-bottom: 4px; text-align: ${isMe ? 'right' : 'left'};">${msg.SenderName} • ${msg.TimeString}</div><div style="background: ${bgColor}; color: ${textColor}; padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.5;">${msg.MessageText}</div></div>`;
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight; 
+                }
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            fetch('/api/send_message', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ opp_id: chatOppId, message: text }) }).then(res => res.json()).then(data => { if(data.success) { input.value = ''; loadChatMessages(); } });
+        }
+
+        if (document.getElementById('chat-box')) {
+            loadChatMessages(); setInterval(loadChatMessages, 3000); 
+            document.getElementById('chat-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') sendChatMessage(); });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - PartWork</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #222; line-height: 1.6; }
+
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; border-bottom: 1px solid #333; padding: 0 40px; }
+        .nav-bar-left-content, .nav-right-content { display: flex; align-items: center; }
+        .nav-links-left, .nav-links-right, .location-dropbox { display: flex; flex-direction: row; list-style: none; gap: 30px; align-items: center; }
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; transition: color 0.2s; }
+        .nav-link a:hover, .nav-link a.active { color: #fff; } 
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+        .location-dropbox { margin-right: 30px; gap: 10px; color: #9f9d9b; }
+
+        .main-container { max-width: 1100px; margin: 40px auto; display: flex; gap: 30px; padding: 0 20px; align-items: flex-start; }
+        
+        .card { background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #dcdcdc; margin-bottom: 30px; }
+        .card-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #222; border-bottom: 2px solid #e9e9e9; padding-bottom: 10px; }
+        
+        /* LEFT COLUMN */
+        .profile-col { flex: 1; }
+        .profile-header { text-align: center; margin-bottom: 25px; }
+        .avatar { font-size: 60px; margin-bottom: 10px; }
+        .student-name { font-size: 28px; font-weight: 700; color: #222; }
+        .student-uni { font-size: 16px; color: #666; font-weight: 500; margin-bottom: 15px; }
+        .profile-details { font-size: 15px; color: #444; line-height: 2; }
+        .profile-details span { font-weight: 600; color: #222; display: inline-block; width: 100px; }
+
+        .score-box { background: #fdf8f1; border: 1px solid #f39c12; padding: 20px; border-radius: 12px; text-align: center; margin-top: 25px; }
+        .score-title { font-size: 14px; color: #d35400; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .score-value { font-size: 36px; font-weight: 700; color: #222; }
+        .score-value span { color: #f39c12; }
+
+        /* FORM ELEMENTS */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #8bb1ff; }
+
+        /* RIGHT COLUMN */
+        .action-col { flex: 1.5; }
+        
+        .btn-action { background-color: #8bb1ff; color: #000; border: none; border-radius: 8px; padding: 10px 20px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; width: 100%; }
+        .btn-action:hover { background-color: #6997f5; }
+        .btn-dark { background-color: #222; color: #fff; width: auto; }
+        .btn-dark:hover { background-color: #444; }
+
+        /* SKILL CHECKBOXES */
+        .skills-checkbox-container { max-height: 250px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 15px; background: #fdfdfd; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .skill-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: #222; padding: 5px; border-radius: 4px; transition: background 0.2s; }
+        .skill-label:hover { background: #e9e9e9; }
+        .skill-label input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #222; }
+        .skills-checkbox-container::-webkit-scrollbar { width: 6px; }
+        .skills-checkbox-container::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+
+        /* PAYOUT ALERT */
+        .wallet-display { background: #fdfdfd; border: 2px dashed #ccc; padding: 20px; text-align: center; border-radius: 12px; margin-bottom: 15px; font-family: monospace; font-size: 18px; font-weight: 700; color: #444; letter-spacing: 1px; }
+        .wallet-active { border-color: #27ae60; color: #27ae60; background: #eafaf1; }
+        .alert-box { padding: 15px; border-radius: 8px; font-size: 14px; font-weight: 500; margin-bottom: 20px; display: none; }
+        .alert-success { background: #eafaf1; color: #27ae60; border: 1px solid #a9dfbf; display: block; }
+        .alert-warning { background: #fdedec; color: #c0392b; border: 1px solid #f5b7b1; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <div class="nav-bar-left-content">
+            <ul class="nav-links-left">
+                <li class="app-name"><a href="/">PartWork</a></li>
+                <li class="nav-link"><a href="/">Home</a></li>
+                <li class="nav-link"><a href="/find_work">Find Work</a></li>
+                <li class="nav-link"><a href="/applications">Applications</a></li>
+                <li class="nav-link"><a href="/my_projects">My Projects</a></li>
+            </ul>
+        </div>
+        <div class="nav-right-content">
+            <ul class="nav-links-right">
+                <li class="nav-link"><a href="/dashboard" class="active">Dashboard</a></li>
+                <li class="user-logo" style="cursor: pointer;">
+                    <a href="/logout" style="text-decoration: none; font-size: 24px;" title="Logout">👤</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <div class="profile-col">
+            <div class="card">
+                <div class="profile-header">
+                    <div class="avatar">🎓</div>
+                    <div class="student-name">{{ profile.FirstName }} {{ profile.LastName }}</div>
+                    <div class="student-uni">🏛️ {{ profile.AcademicAffiliation }}</div>
+                </div>
+                
+                <div class="profile-details">
+                    <div><span>Location:</span> <span id="display-city" style="font-weight: 400; width: auto;">{{ profile.City }}</span>, <span id="display-state" style="font-weight: 400; width: auto;">{{ profile.State }}</span></div>
+                    <div><span>Zipcode:</span> <span id="display-zip" style="font-weight: 400; width: auto;">{{ profile.Zipcode }}</span></div>
+                    <div><span>Street:</span> <span id="display-street" style="font-weight: 400; width: auto;">{{ profile.Street }}</span></div>
+                </div>
+
+                <div class="score-box">
+                    <div class="score-title">Reliability Score</div>
+                    <div class="score-value">
+                        <span>★</span> 
+                        {{ profile.ReliabilityScore if profile.ReliabilityScore else 'New' }} 
+                        <span style="font-size: 20px; color: #666;">/ 5.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Edit Details</h3>
+                <div class="form-group">
+                    <label>Street Address</label>
+                    <input type="text" id="edit-street" value="{{ profile.Street }}">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>City</label>
+                        <input type="text" id="edit-city" value="{{ profile.City }}">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>State</label>
+                        <select id="edit-state" style="width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none; background: white;">
+                            <option value="{{ profile.State }}" selected hidden>{{ profile.State }}</option>
+                            <optgroup label="States">
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                <option value="Assam">Assam</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                <option value="Jharkhand">Jharkhand</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Manipur">Manipur</option>
+                                <option value="Meghalaya">Meghalaya</option>
+                                <option value="Mizoram">Mizoram</option>
+                                <option value="Nagaland">Nagaland</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Sikkim">Sikkim</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Tripura">Tripura</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Uttarakhand">Uttarakhand</option>
+                                <option value="West Bengal">West Bengal</option>
+                            </optgroup>
+                            <optgroup label="Union Territories">
+                                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                                <option value="Chandigarh">Chandigarh</option>
+                                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra & Nagar Haveli and Daman & Diu</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                                <option value="Ladakh">Ladakh</option>
+                                <option value="Lakshadweep">Lakshadweep</option>
+                                <option value="Puducherry">Puducherry</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Zipcode</label>
+                    <input type="text" id="edit-zipcode" value="{{ profile.Zipcode }}">
+                </div>
+                <button class="btn-action" onclick="updateProfile()">Save Changes</button>
+                <div id="profile-msg" style="font-size: 13px; margin-top: 10px; font-weight: 500; text-align: center;"></div>
+            </div>
+        </div>
+
+        <div class="action-col">
+            
+            <div class="card">
+                <h3 class="card-title">Escrow Payout Wallet</h3>
+                
+                {% if payment_token %}
+                    <div class="alert-box alert-success" id="payment-status">
+                        ✓ Wallet linked. You are ready to receive escrow payouts!
+                    </div>
+                    <div class="wallet-display wallet-active" id="wallet-text">
+                        {{ payment_token }}
+                    </div>
+                {% else %}
+                    <div class="alert-box alert-warning" id="payment-status">
+                        ⚠️ Action Required: You must generate an escrow wallet to apply for paid jobs.
+                    </div>
+                    <div class="wallet-display" id="wallet-text">
+                        No Wallet Generated
+                    </div>
+                    <button id="generate-btn" class="btn-action btn-dark" style="width: 100%; padding: 15px;" onclick="generateWallet()">Generate Secure Wallet</button>
+                {% endif %}
+                
+                <div id="payment-msg" style="font-size: 13px; margin-top: 10px; font-weight: 500; text-align: center;"></div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">My Skills</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                    Select your skills below. Accurate tagging ensures you can apply to jobs that strictly require these skills.
+                </p>
+
+                <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
+                    <div style="font-size: 12px; font-weight: 700; color: #888; margin-bottom: 10px; text-transform: uppercase;">Your Saved Skills</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        {% if profile.Skills %}
+                            {% for skill in profile.Skills %}
+                                <span style="background: #222; color: #fff; padding: 6px 15px; border-radius: 50px; font-size: 13px; font-weight: 600;">{{ skill }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span style="font-size: 13px; color: #888; font-style: italic;">No skills saved yet. Use the list below to add some!</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="text" id="skill-search" placeholder="Search skills to filter..." onkeyup="filterSkills()" style="width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none;">
+                </div>
+
+                <div class="skills-checkbox-container" id="skills-container">
+                    {% for skill in skills_list %}
+                        <label class="skill-label">
+                            <input type="checkbox" class="skill-checkbox" value="{{ skill }}" 
+                            {% if profile.Skills and skill in profile.Skills %} checked {% endif %}>
+                            <span class="skill-name">{{ skill }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <button class="btn-action btn-dark" style="width: 100%; padding: 12px;" onclick="saveSkills()">Save Selected Skills</button>
+                <div id="skill-msg" style="font-size: 13px; margin-top: 10px; font-weight: 500; text-align: center;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Edit Profile Logic
+        function updateProfile() {
+            const city = document.getElementById('edit-city').value;
+            const state = document.getElementById('edit-state').value;
+            const zip = document.getElementById('edit-zipcode').value;
+            const street = document.getElementById('edit-street').value;
+            const msgBox = document.getElementById('profile-msg');
+
+            fetch('/api/update_profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ city: city, state: state, zipcode: zip, street: street })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    msgBox.innerText = data.message;
+                    msgBox.style.color = "#27ae60";
+                    document.getElementById('display-city').innerText = city;
+                    document.getElementById('display-state').innerText = state;
+                    document.getElementById('display-zip').innerText = zip;
+                    document.getElementById('display-street').innerText = street;
+                } else {
+                    msgBox.innerText = "Error updating profile.";
+                    msgBox.style.color = "#c0392b";
+                }
+            });
+        }
+
+        // Generate Wallet Logic
+        function generateWallet() {
+            const msgBox = document.getElementById('payment-msg');
+            const statusBox = document.getElementById('payment-status');
+            const walletDisplay = document.getElementById('wallet-text');
+            const generateBtn = document.getElementById('generate-btn');
+
+            fetch('/api/generate_payment', {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    walletDisplay.innerText = data.token;
+                    walletDisplay.className = "wallet-display wallet-active";
+                    statusBox.className = "alert-box alert-success";
+                    statusBox.innerText = "✓ Wallet linked. You are ready to receive escrow payouts!";
+                    if(generateBtn) generateBtn.style.display = 'none';
+                } else {
+                    msgBox.innerText = "Error generating wallet.";
+                    msgBox.style.color = "#c0392b";
+                }
+            });
+        }
+
+        // Search Filter Logic for Skills
+        function filterSkills() {
+            const query = document.getElementById('skill-search').value.toLowerCase();
+            const labels = document.querySelectorAll('.skill-label');
+            labels.forEach(label => {
+                const name = label.querySelector('.skill-name').innerText.toLowerCase();
+                if (name.includes(query)) {
+                    label.style.display = 'flex';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+        }
+
+        // Save Multiple Skills Logic
+        function saveSkills() {
+            const msgBox = document.getElementById('skill-msg');
+            msgBox.innerText = "Saving...";
+            msgBox.style.color = "#222";
+
+            const checkedSkills = Array.from(document.querySelectorAll('.skill-checkbox:checked')).map(cb => cb.value);
+
+            fetch('/api/update_skills', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ skills: checkedSkills })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); 
+                } else {
+                    msgBox.innerText = data.message || "Error saving skills.";
+                    msgBox.style.color = "#c0392b";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

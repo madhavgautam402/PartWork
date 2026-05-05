@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hire Students - PartWork</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #222; }
+
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; border-bottom: 1px solid #333; padding: 0 40px; }
+        .nav-links-left, .nav-links-right { display: flex; flex-direction: row; list-style: none; gap: 30px; align-items: center; }
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; }
+        .nav-link a:hover, .nav-link a.active { color: #fff; } 
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+
+        /* WIDER CONTAINER */
+        .main-container { max-width: 1400px; margin: 30px auto; padding: 0 40px; display: flex; gap: 30px; align-items: flex-start;}
+        
+        /* STUDENT GRID (MAIN CONTENT) */
+        .content { flex: 4; }
+        .page-header { margin-bottom: 30px; }
+        .page-header h2 { font-size: 32px; font-weight: 700; color: #222; }
+
+        .student-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .student-card { background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #dcdcdc; text-align: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+        .student-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        
+        .avatar { font-size: 50px; margin-bottom: 15px; }
+        .student-name { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 5px; }
+        .student-uni { font-size: 14px; color: #666; font-weight: 500; margin-bottom: 15px; }
+        
+        .score-badge { display: inline-block; background: #fdf8f1; border: 1px solid #fad7a1; color: #d35400; padding: 4px 12px; border-radius: 50px; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
+        
+        .skills-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+        .skill-tag { background: #e9e9e9; color: #333; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+
+        .btn-invite { background: #222; color: #fff; padding: 10px; border-radius: 8px; width: 100%; border: none; font-weight: 600; cursor: pointer; font-family: 'Poppins'; transition: 0.2s; }
+        .btn-invite:hover { background: #444; }
+
+        /* SIDEBAR FILTERS */
+        .sidebar { flex: 1; min-width: 280px; background: #fff; padding: 25px; border-radius: 12px; border: 1px solid #dcdcdc; position: sticky; top: 30px; }
+        .filter-section { margin-bottom: 25px; }
+        .filter-title { font-size: 16px; font-weight: 700; margin-bottom: 15px; color: #222; border-bottom: 2px solid #e9e9e9; padding-bottom: 5px; }
+        
+        .search-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none; margin-bottom: 10px;}
+        .checkbox-label { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; color: #444; cursor: pointer; }
+        
+        .btn-filter { background: #222; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; }
+        .btn-filter:hover { background: #444; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <ul class="nav-links-left">
+            <li class="app-name"><a href="/">PartWork</a></li>
+            <li class="nav-link"><a href="/">Overview</a></li>
+            <li class="nav-link"><a href="/hire_students" class="active">Hire Students</a></li>
+            <li class="nav-link"><a href="/manage_projects">Manage Projects</a></li>
+        </ul>
+        <ul class="nav-links-right">
+            <li class="nav-link"><a href="/dashboard">Dashboard</a></li>
+            <li class="user-logo"><a href="/logout" style="text-decoration: none; font-size: 24px;">🏢</a></li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+        
+        <div class="content">
+            <div class="page-header">
+                <h2>Explore Talent Pool</h2>
+                <p style="color: #666; font-size: 16px;">Browse verified students looking for their next opportunity.</p>
+            </div>
+
+            <div class="student-grid">
+                {% for student in students %}
+                <div class="student-card" onclick="window.location.href='/student/{{ student.StudentID }}'">
+                    <div>
+                        <div class="avatar">🎓</div>
+                        <div class="student-name">{{ student.FirstName }} {{ student.LastName }}</div>
+                        <div class="student-uni">🏛️ {{ student.AcademicAffiliation }}</div>
+                        <div style="font-size: 13px; color: #888; margin-bottom: 10px;">📍 {{ student.City }}, {{ student.State }}</div>
+                        
+                        <div class="score-badge">
+                            ★ {{ student.ReliabilityScore if student.ReliabilityScore else 'New User' }}
+                        </div>
+                    </div>
+                    
+                    <div class="skills-container">
+                        {% for skill in student.Skills %}
+                            <span class="skill-tag">{{ skill }}</span>
+                        {% else %}
+                            <span style="color: #999; font-size: 13px;">No skills listed.</span>
+                        {% endfor %}
+                    </div>
+
+                    <div style="margin-top: auto;">
+                        <button class="btn-invite" onclick="event.stopPropagation(); openInviteModal('{{ student.StudentID }}', '{{ student.FirstName }} {{ student.LastName }}')">
+                            ✉️ Invite to Project
+                        </button>
+                    </div>
+                </div>
+                {% else %}
+                    <div style="grid-column: 1 / -1; background: #fff; padding: 40px; border-radius: 12px; text-align: center; border: 1px solid #dcdcdc;">
+                        <h3 style="margin-bottom: 5px;">No students match your criteria.</h3>
+                        <p style="color: #666; font-size: 14px;">Try adjusting your filters or clearing the search.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <form action="/hire_students" method="GET">
+                <div class="filter-section">
+                    <div class="filter-title">Search Talent</div>
+                    <input type="text" name="q" class="search-input" placeholder="Name or University..." value="{{ request.args.get('q', '') }}">
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title">Location</div>
+                    <input type="text" name="loc" class="search-input" placeholder="City or State..." value="{{ request.args.get('loc', '') }}">
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title">Skills Filter</div>
+                    <div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                        {% for skill in all_skills %}
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="skill" value="{{ skill }}" {% if skill in selected_skills %}checked{% endif %}>
+                            {{ skill }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-filter">Update Search</button>
+                <a href="/hire_students" style="display: block; text-align: center; margin-top: 15px; font-size: 13px; color: #666; text-decoration: none;">Reset Filters</a>
+            </form>
+        </div>
+    </div>
+
+    <div id="inviteModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            
+            <h3 style="margin-bottom: 5px; font-size: 20px; font-weight: 700; color: #222;">Invite Student</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Invite <strong id="invite-student-name"></strong> to apply to one of your open opportunities.</p>
+            
+            <input type="hidden" id="invite-student-id">
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #666; margin-bottom: 5px;">Select a Project</label>
+                <select id="invite-opp-id" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';">
+                    <option value="" disabled selected>Choose an active project...</option>
+                    {% for job in active_jobs %}
+                        <option value="{{ job.OppID }}">{{ job.RoleTitle }}</option>
+                    {% else %}
+                        <option value="" disabled>You have no active projects available.</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #666; margin-bottom: 5px;">Custom Message (Optional)</label>
+                <textarea id="invite-message" rows="3" placeholder="Hey! I loved your profile and think you'd be a great fit for this..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; outline: none; font-family: 'Poppins';"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-send-invite" onclick="sendProjectInvite()" style="background: #27ae60; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Poppins';">Send Invite</button>
+                <button onclick="document.getElementById('inviteModal').style.display='none'" style="background: #e9e9e9; color: #222; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Poppins';">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openInviteModal(studentId, studentName) {
+            document.getElementById('invite-student-id').value = studentId;
+            document.getElementById('invite-student-name').innerText = studentName;
+            
+            // Reset modal state
+            document.getElementById('invite-opp-id').value = "";
+            document.getElementById('invite-message').value = "";
+            
+            document.getElementById('inviteModal').style.display = 'flex';
+        }
+
+        function sendProjectInvite() {
+            const studentId = document.getElementById('invite-student-id').value;
+            const oppId = document.getElementById('invite-opp-id').value;
+            const message = document.getElementById('invite-message').value.trim();
+
+            if (!oppId) {
+                alert("Please select a project to invite them to.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-send-invite');
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            fetch('/api/invite_student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    student_id: studentId, 
+                    opp_id: oppId, 
+                    message: message 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert("Invite sent successfully!");
+                    document.getElementById('inviteModal').style.display = 'none';
+                } else {
+                    alert("Error: " + data.message);
+                }
+                btn.innerText = "Send Invite";
+                btn.disabled = false;
+            })
+            .catch(err => {
+                alert("Network error occurred.");
+                btn.innerText = "Send Invite";
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

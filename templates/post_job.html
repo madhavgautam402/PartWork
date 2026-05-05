@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Post an Opportunity - PartWork</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">        
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #e9e9e9; color: #222; }
+
+        .nav-bar { height: 60px; display: flex; justify-content: space-between; align-items: center; background-color: #222222; padding: 0 40px; }
+        .nav-links-left, .nav-links-right { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-link a, .app-name a { text-decoration: none; color: #9f9d9b; font-size: 18px; font-weight: 600; }
+        .nav-link a:hover, .nav-link a.active { color: #fff; } 
+        .app-name a { color: #e9e9e9; font-size: 22px; font-weight: 700; margin-right: 20px; }
+
+        .main-container { max-width: 800px; margin: 40px auto; background: #fff; padding: 40px; border-radius: 12px; border: 1px solid #dcdcdc; }
+        .page-title { font-size: 28px; font-weight: 700; margin-bottom: 30px; border-bottom: 2px solid #e9e9e9; padding-bottom: 10px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #444; margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none; }
+        
+        .skills-checkbox-container { max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 15px; background: #fdfdfd; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .skill-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: #222; padding: 5px; border-radius: 4px; transition: background 0.2s; }
+        .skill-label:hover { background: #e9e9e9; }
+        .skill-label input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #222; }
+
+        .milestone-container { background: #fdfdfd; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+        .btn-add-milestone { background: #e9e9e9; color: #222; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 30px; }
+        
+        .escrow-box { background: #fdf8f1; border: 1px solid #f39c12; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+        
+        .btn-submit { background: #222; color: #fff; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; font-family: 'Poppins', sans-serif; transition: 0.2s;}
+        .btn-submit:hover { background: #444; }
+
+        .input-error { border: 2px solid #c0392b !important; background-color: #fdf2f2 !important;}
+        input, select, textarea { transition: border-color 0.2s, background-color 0.2s;}        
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <ul class="nav-links-left">
+            <li class="app-name"><a href="/">PartWork</a></li>
+            <li class="nav-link"><a href="/">Overview</a></li>
+            <li class="nav-link"><a href="/hire_students">Hire Students</a></li>
+            <li class="nav-link"><a href="/manage_projects">Manage Projects</a></li>
+        </ul>
+        <ul class="nav-links-right">
+            <li class="nav-link"><a href="/dashboard">Dashboard</a></li>
+            <li class="user-logo"><a href="/logout" style="text-decoration: none; font-size: 24px;">🏢</a></li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+        <h2 class="page-title">Post a New Opportunity</h2>
+
+        <div class="form-group">
+            <label>Role Title</label>
+            <input type="text" id="job-title" placeholder="e.g., UI/UX Designer Intern">
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Job Type</label>
+                <select id="job-type">
+                    <option value="Freelance">Freelance</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Internship">Internship</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Students Needed</label>
+                <input type="number" id="job-req" value="1" min="1">
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label>State</label>
+                <select id="job-state" onchange="updateCities()">
+                    <option value="" disabled selected>Select State...</option>
+                    {% for state in city_data.keys()|sort %}
+                        <option value="{{ state }}">{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group" style="flex: 1;">
+                <label>City</label>
+                <select id="job-city" disabled>
+                    <option value="">Select State first...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Required Skills</label>
+            <div id="selected-skills-list" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            <input type="text" id="skill-search" placeholder="Search skills to filter..." onkeyup="filterSkills()" style="margin-bottom: 10px; margin-top:10px">
+            <div class="skills-checkbox-container" id="skills-container">
+                {% for skill in skills_list %}
+                    <label class="skill-label">
+                        <input type="checkbox" class="job-skill-checkbox" value="{{ skill }}">
+                        <span class="skill-name">{{ skill }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="job-desc" rows="5" placeholder="Describe the responsibilities..."></textarea>
+        </div>
+
+        <h3 style="margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #e9e9e9; padding-bottom: 10px;">Milestones & Payouts</h3>
+        
+        <div id="milestones-wrapper">
+            <div class="milestone-container milestone-item">
+                <div class="form-group">
+                    <label>Milestone Description</label>
+                    <input type="text" class="m-desc" placeholder="e.g., Deliver initial wireframes">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Payout ($)</label>
+                        <input type="number" class="m-payout" placeholder="Amount" oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Deadline</label>
+                        <input type="date" class="m-deadline" onchange="enforceDateChain()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-add-milestone" onclick="addMilestoneBox()">+ Add Another Milestone</button>
+
+        <div class="escrow-box">
+            <div style="font-size: 14px; font-weight: 700; color: #d35400; text-transform: uppercase;">Total Escrow Commitment</div>
+            <div style="font-size: 32px; font-weight: 700; color: #222;" id="total-escrow">$0.00</div>
+            <div style="font-size: 13px; color: #666; margin-top: 5px;">This amount will be locked in the project wallet upon posting.</div>
+        </div>
+
+        <button class="btn-submit" id="submit-btn" onclick="submitJob()">Publish Opportunity</button>
+        <div id="status-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            enforceDateChain();
+        });
+
+        function filterSkills() {
+            const query = document.getElementById('skill-search').value.toLowerCase();
+            const labels = document.querySelectorAll('.skill-label');
+            labels.forEach(label => {
+                const name = label.querySelector('.skill-name').innerText.toLowerCase();
+                label.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            document.querySelectorAll('.m-payout').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById('total-escrow').innerText = `$${total.toFixed(2)}`;
+            return total;
+        }
+
+        // 1. Get the data from Flask
+        const stateCityData = {{ city_data | tojson | safe }};
+
+        function updateCities() {
+            const stateSelect = document.getElementById('job-state');
+            const citySelect = document.getElementById('job-city');
+            const selectedState = stateSelect.value;
+
+            // 2. Clear the existing city options
+            citySelect.innerHTML = '<option value="" disabled selected>Select City...</option>';
+
+            if (selectedState && stateCityData[selectedState]) {
+                // 3. Enable the city dropdown
+                citySelect.disabled = false;
+                
+                // 4. Populate with cities belonging to that state
+                stateCityData[selectedState].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.innerText = city;
+                    citySelect.appendChild(option);
+                });
+
+                // 5. Visual Flair: Flash green to show it's enabled
+                citySelect.style.borderColor = '#27ae60';
+                setTimeout(() => citySelect.style.borderColor = '#ccc', 1000);
+            } else {
+                citySelect.disabled = true;
+            }
+        }
+
+
+        const checkboxes = document.querySelectorAll('.job-skill-checkbox');
+        const displayArea = document.getElementById('selected-skills-list');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateDisplay();
+            });
+        });
+
+        function updateDisplay() {
+            displayArea.innerHTML = "";
+
+            const checkedBoxes = document.querySelectorAll('.job-skill-checkbox:checked');
+
+            checkedBoxes.forEach(cb => {
+                const badge = document.createElement('span');
+                badge.innerText = cb.value;
+                badge.style.background = "#222";
+                badge.style.color = "#fff";
+                badge.style.padding = "5px 12px";
+                badge.style.borderRadius = "15px";
+                badge.style.fontSize = "12px";
+                badge.style.fontWeight = "600";
+                
+                displayArea.appendChild(badge);
+            });
+            
+            if (checkedBoxes.length === 0) {
+                displayArea.innerHTML = "<span style='color:#999; font-size:13px;'>Select the skills students must possess to apply</span>";
+            }
+        }        
+
+        
+
+        function addMilestoneBox() {
+            const wrapper = document.getElementById('milestones-wrapper');
+            const html = `
+                <div class="milestone-container milestone-item">
+                    <div class="form-group">
+                        <label>Milestone Description</label>
+                        <input type="text" class="m-desc" placeholder="e.g., Final code delivery">
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Payout ($)</label>
+                            <input type="number" class="m-payout" placeholder="Amount" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Deadline</label>
+                            <input type="date" class="m-deadline" onchange="enforceDateChain()">
+                        </div>
+                    </div>
+                </div>
+            `;
+            wrapper.insertAdjacentHTML('beforeend', html);
+
+            enforceDateChain(); 
+        }
+
+        function submitJob() {
+            const btn = document.getElementById('submit-btn');
+            const selectedSkills = Array.from(document.querySelectorAll('.job-skill-checkbox:checked')).map(cb => cb.value);
+            const title = document.getElementById('job-title').value.trim();
+            const desc = document.getElementById('job-desc').value.trim();
+            const city = document.getElementById('job-city').value;
+            const state = document.getElementById('job-state').value;
+            const req = document.getElementById('job-req').value;
+
+            const msgBox = document.getElementById('status-msg');
+            
+            // 1. Define all fields that are REQUIRED
+            const fields = [
+                { id: 'job-title', name: 'Role Title' },
+                { id: 'job-desc', name: 'Description' },
+                { id: 'job-city', name: 'City' },
+                { id: 'job-state', name: 'State' },
+                { id: 'job-req', name: 'Students Needed' }
+            ];
+
+            let firstErrorElement = null;
+            let missingFields = [];
+
+            // 2. Loop through and validate
+            fields.forEach(field => {
+                const el = document.getElementById(field.id);
+                const val = el.value.trim();
+
+                if (!val || val === "Select State first...") {
+                    el.classList.add('input-error');
+                    missingFields.push(field.name);
+                    
+                    if (!firstErrorElement) firstErrorElement = el;
+                    el.oninput = () => {
+                        if(el.value.trim() !== "") {
+                            el.classList.remove('input-error');
+                        }
+                    };
+                } else {
+                    el.classList.remove('input-error');
+                }
+            });
+
+            // 4. Handle the error display
+            if (missingFields.length > 0) {
+                msgBox.innerText = "Please fix the highlighted fields.";
+                msgBox.style.color = "#c0392b";
+                
+                // Scroll to the first error so they see it immediately
+                firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            if(req < 1) {
+                msgBox.innerText = "Error: You must require at least 1 student.";
+                msgBox.style.color = "#c0392b";
+                return;
+            }
+
+            const milestones = [];
+            let validMilestones = true;
+            
+            document.querySelectorAll('.milestone-item').forEach(item => {
+                const mDesc = item.querySelector('.m-desc').value.trim();
+                const mPayout = parseFloat(item.querySelector('.m-payout').value) || 0;
+                const mDeadline = item.querySelector('.m-deadline').value;
+
+                if(!mDesc || !mDeadline) {
+                    msgBox.innerText = "All milestones must have a description and a deadline.";
+                    msgBox.style.color = "#c0392b";
+                    validMilestones = false;
+                }
+                if(mPayout < 0) {
+                    msgBox.innerText = "Milestone payouts cannot be negative numbers.";
+                    msgBox.style.color = "#c0392b";
+                    validMilestones = false;
+                }
+
+                milestones.push({ desc: mDesc, payout: mPayout, deadline: mDeadline });
+            });
+
+            if(!validMilestones) return;
+            if(milestones.length === 0) {
+                msgBox.innerText = "You must add at least one milestone to post a job.";
+                msgBox.style.color = "#c0392b";
+                return;
+            }            
+
+            const payload = {
+                title: title,
+                type: document.getElementById('job-type').value,
+                req_students: req,
+                city: city,
+                state: state,
+                skills: selectedSkills, 
+                desc: desc,
+                funds: calculateTotal(),
+                milestones: milestones
+            };
+
+            btn.innerText = "Posting...";
+            btn.disabled = true;
+
+            fetch('/api/post_job', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    window.location.href = '/manage_projects';
+                } else {
+                    msgBox.innerText = data.message;
+                    msgBox.style.color = "#c0392b";
+                    btn.innerText = "Publish Opportunity";
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        function enforceDateChain() {
+            // 1. Get today's date in 'YYYY-MM-DD' format (required by HTML inputs)
+            const today = new Date().toISOString().split('T')[0]; 
+            const deadlines = document.querySelectorAll('.m-deadline');
+            
+            let currentMinDate = today;
+
+            deadlines.forEach((input) => {
+                // 2. Set the minimum allowed date for the calendar popup
+                input.min = currentMinDate;
+
+                // 3. If they already picked a date, but then went back and changed 
+                // a previous milestone to a later date, we must clear this invalid date
+                if (input.value && input.value < input.min) {
+                    input.value = ""; 
+                }
+
+                // 4. Update the "currentMinDate" for the NEXT loop iteration
+                // If this input has a date, the next milestone can't be before it.
+                if (input.value && input.value > currentMinDate) {
+                    currentMinDate = input.value;
+                }
+            });
+        }        
+    </script>
+</body>
+</html>
